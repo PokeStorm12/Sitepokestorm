@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PokéStorm Tickets</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#050816;
+color:white;
+overflow-x:hidden;
+min-height:100vh;
+}
+
+/* FUNDO */
+
+body::before{
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at top,#2962ff44,transparent 40%),
+radial-gradient(circle at bottom,#8a2eff44,transparent 40%);
+z-index:-1;
+}
+
+/* HEADER */
+
+header{
+padding:25px 8%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#0d1024cc;
+backdrop-filter:blur(10px);
+border-bottom:1px solid #24305d;
+}
+
+.logo{
+font-size:32px;
+font-weight:700;
+background:linear-gradient(90deg,#4ea1ff,#9d4eff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.back-btn{
+padding:12px 25px;
+background:#4ea1ff22;
+border:1px solid #4ea1ff;
+border-radius:12px;
+color:white;
+text-decoration:none;
+transition:.3s;
+}
+
+.back-btn:hover{
+background:#4ea1ff44;
+}
+
+/* CONTAINER */
+
+.container{
+padding:50px 8%;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+/* FORM */
+
+.form-box,
+.ticket-box{
+background:#10162d;
+padding:30px;
+border-radius:25px;
+border:1px solid #24305d;
+box-shadow:0 0 25px #00000055;
+}
+
+.form-box h2,
+.ticket-box h2{
+font-size:30px;
+margin-bottom:25px;
+}
+
+input,
+textarea,
+select{
+width:100%;
+padding:15px;
+margin-top:15px;
+border:none;
+border-radius:12px;
+background:#1a2142;
+color:white;
+font-size:15px;
+}
+
+textarea{
+height:160px;
+resize:none;
+}
+
+/* BOTÕES */
+
+button{
+width:100%;
+padding:15px;
+margin-top:20px;
+border:none;
+border-radius:15px;
+background:linear-gradient(90deg,#4ea1ff,#8a2eff);
+color:white;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-5px);
+box-shadow:0 0 25px #4ea1ff55;
+}
+
+/* TICKETS */
+
+.ticket{
+background:#161f3b;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+border:1px solid #28356b;
+transition:.3s;
+}
+
+.ticket:hover{
+transform:translateY(-5px);
+}
+
+.ticket h3{
+color:#4ea1ff;
+margin-bottom:10px;
+}
+
+.ticket p{
+margin-top:8px;
+color:#cccccc;
+}
+
+.status{
+display:inline-block;
+padding:6px 14px;
+border-radius:999px;
+font-size:12px;
+font-weight:600;
+margin-top:15px;
+}
+
+.open{
+background:#00ff8840;
+color:#00ff99;
+}
+
+.closed{
+background:#ff004440;
+color:#ff5577;
+}
+
+.ticket-buttons{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.ticket-buttons button{
+margin-top:0;
+}
+
+/* MODAL */
+
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:#000000aa;
+backdrop-filter:blur(6px);
+z-index:999;
+}
+
+.modal-content{
+background:#10162d;
+width:90%;
+max-width:700px;
+margin:5% auto;
+padding:30px;
+border-radius:25px;
+position:relative;
+}
+
+.close{
+position:absolute;
+right:25px;
+top:15px;
+font-size:35px;
+cursor:pointer;
+}
+
+.reply{
+background:#1a2142;
+padding:15px;
+border-radius:15px;
+margin-top:15px;
+}
+
+.reply strong{
+color:#4ea1ff;
+}
+
+/* RESPONSIVO */
+
+@media(max-width:900px){
+
+.container{
+grid-template-columns:1fr;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+
+<div class="logo">
+PokéStorm Tickets
+</div>
+
+<a href="index.html" class="back-btn">
+Voltar
+</a>
+
+</header>
+
+<div class="container">
+
+<!-- FORM -->
+
+<div class="form-box">
+
+<h2>🎫 Abrir Ticket</h2>
+
+<input type="text" id="name" placeholder="Seu nome">
+
+<input type="email" id="email" placeholder="Seu email">
+
+<select id="category">
+
+<option>Suporte</option>
+<option>Bug</option>
+<option>Denúncia</option>
+<option>Compra</option>
+<option>Parceria</option>
+
+</select>
+
+<input type="text" id="title" placeholder="Título do ticket">
+
+<textarea id="message" placeholder="Explique o problema..."></textarea>
+
+<button id="createTicket">
+Criar Ticket
+</button>
+
+</div>
+
+<!-- LISTA -->
+
+<div class="ticket-box">
+
+<h2>📂 Tickets</h2>
+
+<div id="tickets"></div>
+
+</div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<span class="close">
+&times;
+</span>
+
+<h2>Detalhes do Ticket</h2>
+
+<div id="ticketDetails"></div>
+
+<textarea id="replyInput"
+placeholder="Responder ticket...">
+</textarea>
+
+<button id="sendReply">
+Enviar Resposta
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* ELEMENTOS */
+
+const createBtn =
+document.getElementById('createTicket');
+
+const ticketsDiv =
+document.getElementById('tickets');
+
+const modal =
+document.getElementById('modal');
+
+const closeModal =
+document.querySelector('.close');
+
+const details =
+document.getElementById('ticketDetails');
+
+const replyInput =
+document.getElementById('replyInput');
+
+const sendReply =
+document.getElementById('sendReply');
+
+let tickets =
+JSON.parse(localStorage.getItem(
+'pokestormTickets'
+)) || [];
+
+let currentId = null;
+
+/* SALVAR */
+
+function saveTickets(){
+
+localStorage.setItem(
+'pokestormTickets',
+JSON.stringify(tickets)
+);
+
+}
+
+/* RENDER */
+
+function renderTickets(){
+
+ticketsDiv.innerHTML='';
+
+if(tickets.length===0){
+
+ticketsDiv.innerHTML=
+'<p>Nenhum ticket aberto.</p>';
+
+return;
+
+}
+
+tickets.forEach(ticket=>{
+
+const div =
+document.createElement('div');
+
+div.classList.add('ticket');
+
+const statusClass =
+ticket.status==='Aberto'
+? 'open'
+: 'closed';
+
+div.innerHTML = `
+
+<h3>${ticket.title}</h3>
+
+<p>
+<strong>Usuário:</strong>
+${ticket.name}
+</p>
+
+<p>
+<strong>Categoria:</strong>
+${ticket.category}
+</p>
+
+<p>
+${ticket.message}
+</p>
+
+<span class="status ${statusClass}">
+${ticket.status}
+</span>
+
+<div class="ticket-buttons">
+
+<button onclick="openTicket(${ticket.id})">
+Abrir
+</button>
+
+<button onclick="closeTicket(${ticket.id})">
+Fechar
+</button>
+
+</div>
+
+`;
+
+ticketsDiv.appendChild(div);
+
+});
+
+}
+
+/* CRIAR */
+
+createBtn.addEventListener('click',()=>{
+
+const name =
+document.getElementById('name').value;
+
+const email =
+document.getElementById('email').value;
+
+const category =
+document.getElementById('category').value;
+
+const title =
+document.getElementById('title').value;
+
+const message =
+document.getElementById('message').value;
+
+if(
+!name ||
+!email ||
+!title ||
+!message
+){
+
+alert('Preencha todos os campos!');
+
+return;
+
+}
+
+const ticket = {
+
+id:Date.now(),
+
+name,
+email,
+category,
+title,
+message,
+
+status:'Aberto',
+
+replies:[]
+
+};
+
+tickets.unshift(ticket);
+
+saveTickets();
+
+renderTickets();
+
+alert('Ticket criado com sucesso!');
+
+document.getElementById('name').value='';
+document.getElementById('email').value='';
+document.getElementById('title').value='';
+document.getElementById('message').value='';
+
+});
+
+/* ABRIR */
+
+function openTicket(id){
+
+currentId=id;
+
+const ticket =
+tickets.find(t=>t.id===id);
+
+modal.style.display='block';
+
+let repliesHTML='';
+
+ticket.replies.forEach(reply=>{
+
+repliesHTML += `
+
+<div class="reply">
+
+<strong>${reply.author}</strong>
+
+<p>${reply.message}</p>
+
+</div>
+
+`;
+
+});
+
+details.innerHTML = `
+
+<h3>${ticket.title}</h3>
+
+<p>
+<strong>Usuário:</strong>
+${ticket.name}
+</p>
+
+<p>
+<strong>Email:</strong>
+${ticket.email}
+</p>
+
+<p>
+<strong>Categoria:</strong>
+${ticket.category}
+</p>
+
+<p style="margin-top:10px;">
+${ticket.message}
+</p>
+
+<h3 style="margin-top:20px;">
+Respostas
+</h3>
+
+${repliesHTML}
+
+`;
+
+}
+
+/* FECHAR */
+
+function closeTicket(id){
+
+const ticket =
+tickets.find(t=>t.id===id);
+
+if(ticket){
+
+ticket.status='Fechado';
+
+saveTickets();
+
+renderTickets();
+
+}
+
+}
+
+/* RESPONDER */
+
+sendReply.addEventListener('click',()=>{
+
+const text =
+replyInput.value;
+
+if(!text) return;
+
+const ticket =
+tickets.find(t=>t.id===currentId);
+
+if(ticket){
+
+ticket.replies.push({
+
+author:'Staff PokéStorm',
+
+message:text
+
+});
+
+saveTickets();
+
+openTicket(currentId);
+
+renderTickets();
+
+replyInput.value='';
+
+}
+
+});
+
+/* FECHAR MODAL */
+
+closeModal.addEventListener('click',()=>{
+
+modal.style.display='none';
+
+});
+
+window.addEventListener('click',(e)=>{
+
+if(e.target===modal){
+
+modal.style.display='none';
+
+}
+
+});
+
+/* INICIAR */
+
+renderTickets();
+
+</script>
+
+</body>
+</htm
